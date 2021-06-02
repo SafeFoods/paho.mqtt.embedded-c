@@ -366,25 +366,33 @@ int MQTTIsConnected(MQTTClient* client)
 
 void MQTTRun(void* parm)
 {
-	Timer timer;
-	MQTTClient* c = (MQTTClient*)parm;
+    Timer timer;
+    MQTTClient* c = (MQTTClient*)parm;
 
-	TimerInit(&timer);
+    TimerInit(&timer);
 
-	while (1)
-	{
+    while (1)
+    {
 #if defined(MQTT_TASK)
-		MutexLock(&c->mutex);
+        MutexLock(&c->mutex);
 #endif
-        if (TCPIP_TCP_GetIsReady(networkInfo.tcp.socket)) {
-		TimerCountdownMS(&timer, 500); /* Don't wait too long if no traffic is incoming */
-		cycle(c, &timer);
+        // Since this function will disconnect the connection if no data is recieved for 60 seconds,
+        // which it probrably will not, only run the cycle for keep alives or if data has been 
+        if (c->isconnected)
+        {
+            if (keepalive(c) != SUCCESS)
+                MQTTCloseSession(c);
+            if (c->ping_outstanding || TCPIP_TCP_GetIsReady(networkInfo.tcp.socket))
+            {
+                TimerCountdownMS(&timer, 1000); /* Don't wait too long if no traffic is incoming */
+                cycle(c, &timer);
+            }
         }
 #if defined(MQTT_TASK)
-		MutexUnlock(&c->mutex);
+        MutexUnlock(&c->mutex);
 #endif
         vTaskDelay(1);
-	}
+    }
 }
 
 
@@ -405,6 +413,7 @@ int waitfor(MQTTClient* c, int packet_type, Timer* timer)
         if (TimerIsExpired(timer))
             break; // we timed out
         rc = cycle(c, timer);
+        vTaskDelay(1);
     }
     while (rc != packet_type && rc >= 0);
 
