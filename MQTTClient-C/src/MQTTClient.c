@@ -16,7 +16,6 @@
  *   Ian Craggs - add ability to set message handler separately #6
  *******************************************************************************/
 #include "MQTTClient.h"
-#include "drivers/network/network.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -370,14 +369,11 @@ void MQTTRun(void* parm)
 #if defined(MQTT_TASK)
 		MutexLock(&c->mutex);
 #endif
-        if (TCPIP_TCP_GetIsReady(networkInfo.tcp.socket)) {
 		TimerCountdownMS(&timer, 500); /* Don't wait too long if no traffic is incoming */
 		cycle(c, &timer);
-        }
 #if defined(MQTT_TASK)
 		MutexUnlock(&c->mutex);
 #endif
-        vTaskDelay(1);
 	}
 }
 
