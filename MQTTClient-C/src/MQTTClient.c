@@ -395,6 +395,7 @@ int waitfor(MQTTClient* c, int packet_type, Timer* timer)
         if (TimerIsExpired(timer))
             break; // we timed out
         rc = cycle(c, timer);
+        vTaskDelay(1);
     }
     while (rc != packet_type && rc >= 0);
 
