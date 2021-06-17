@@ -207,10 +207,9 @@ DLLExport int MQTTDisconnect(MQTTClient* client);
 
 /** MQTT Yield - MQTT background
  *  @param client - the client object to use
- *  @param time - the time, in milliseconds, to yield for
  *  @return success code
  */
-DLLExport int MQTTYield(MQTTClient* client, int time);
+DLLExport int MQTTYield(MQTTClient* client);
 
 /** MQTT isConnected
  *  @param client - the client object to use

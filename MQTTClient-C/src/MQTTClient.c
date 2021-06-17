@@ -338,23 +338,17 @@ exit:
     return rc;
 }
 
-
-int MQTTYield(MQTTClient* c, int timeout_ms)
+// Modified to wait a single cycle
+int MQTTYield(MQTTClient* c)
 {
     int rc = SUCCESS;
     Timer timer;
 
     TimerInit(&timer);
-    TimerCountdownMS(&timer, timeout_ms);
+    TimerCountdownMS(&timer, 1000);
 
-	  do
-    {
-        if (cycle(c, &timer) < 0)
-        {
-            rc = FAILURE;
-            break;
-        }
-  	} while (!TimerIsExpired(&timer));
+    if (cycle(c, &timer) < 0)
+        rc = FAILURE;
 
     return rc;
 }
