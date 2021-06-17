@@ -629,6 +629,9 @@ int MQTTPublish(MQTTClient* c, const char* topicName, MQTTMessage* message)
     topic.cstring = (char *)topicName;
     int len = 0;
 
+#if defined(MQTT_TASK)
+	  MutexLock(&c->mutex);
+#endif
 	  if (!c->isconnected)
 		    goto exit;
 
@@ -673,6 +676,9 @@ int MQTTPublish(MQTTClient* c, const char* topicName, MQTTMessage* message)
 exit:
     if (rc == FAILURE)
         MQTTCloseSession(c);
+#if defined(MQTT_TASK)
+	  MutexUnlock(&c->mutex);
+#endif
     return rc;
 }
 
