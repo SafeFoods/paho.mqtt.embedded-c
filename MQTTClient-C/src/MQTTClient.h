@@ -219,6 +219,8 @@ DLLExport int MQTTIsConnected(MQTTClient* client);
 
 DLLExport void MQTTCloseSession(MQTTClient* c);
 
+int MQTTKeepAlive(MQTTClient* c);
+
 #if defined(MQTT_TASK)
 /** MQTT start background thread for a client.  After this, MQTTYield should not be called.
 *  @param client - the client object to use

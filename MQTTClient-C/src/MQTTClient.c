@@ -209,7 +209,7 @@ int deliverMessage(MQTTClient* c, MQTTString* topicName, MQTTMessage* message)
 }
 
 
-int keepalive(MQTTClient* c)
+int MQTTKeepAlive(MQTTClient* c)
 {
     int rc = SUCCESS;
 
@@ -324,7 +324,7 @@ int cycle(MQTTClient* c, Timer* timer)
             break;
     }
 
-    if (keepalive(c) != SUCCESS) {
+    if (MQTTKeepAlive(c) != SUCCESS) {
         //check only keepalive FAILURE status so that previous FAILURE status can be considered as FAULT
         rc = FAILURE;
     }
